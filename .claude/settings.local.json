@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/ihma/ihma_core_backend/core/Ihma.Core/**)",
+      "Read(//d/ihma/ihma_core_backend/core/Ihma.Core.PrivateSdk/**)",
+      "Read(//d/ihma/ihma_core_backend/pck/**)",
+      "Bash(find:*)"
+    ]
+  }
+}
