@@ -2,11 +2,10 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using GeneralCore.Pagination;
 using GeneralCore.Repository;
-using StatusGeneric;
 
 namespace GeneralCore.Services;
 
-public abstract class BaseService<TId, TEntity, TListDto, TFilterOptions> : StatusGenericHandler
+public abstract class BaseService<TId, TEntity, TListDto, TFilterOptions>
     where TEntity : class
     where TListDto : class
     where TFilterOptions : SortFilterPageOptions
