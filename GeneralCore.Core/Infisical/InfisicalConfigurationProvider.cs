@@ -30,7 +30,16 @@ public class InfisicalConfigurationProvider : ConfigurationProvider
     }
 
     public override void Load()
-        => LoadAsync().GetAwaiter().GetResult();
+    {
+        try
+        {
+            LoadAsync().GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Infisical dan secretlar yuklanmadi: {ex.Message}", ex);
+        }
+    }
 
     private async Task LoadAsync()
     {
@@ -61,9 +70,12 @@ public class InfisicalConfigurationProvider : ConfigurationProvider
             var value = secret.GetProperty("secretValue").GetString();
 
             // "Database__ConnectionString" → "Database:ConnectionString"
-            data[key.Replace("__", ":")] = value;
+            var mappedKey = key.Replace("__", ":");
+            Console.WriteLine($"[Infisical] key: {key} → {mappedKey}");
+            data[mappedKey] = value;
         }
 
+        Console.WriteLine($"[Infisical] Jami {data.Count} ta secret yuklandi");
         Data = data;
     }
 
