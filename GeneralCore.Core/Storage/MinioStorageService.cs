@@ -59,7 +59,29 @@ public class MinioStorageService : IStorageService
             new BucketExistsArgs().WithBucket(_config.BucketName), ct);
 
         if (!exists)
+        {
             await _client.MakeBucketAsync(
                 new MakeBucketArgs().WithBucket(_config.BucketName), ct);
+            await SetPublicPolicyAsync(ct);
+        }
+    }
+
+    private async Task SetPublicPolicyAsync(CancellationToken ct)
+    {
+        var policy = $$"""
+            {
+                "Version": "2012-10-17",
+                "Statement": [{
+                    "Effect": "Allow",
+                    "Principal": {"AWS": ["*"]},
+                    "Action": ["s3:GetObject"],
+                    "Resource": ["arn:aws:s3:::{{_config.BucketName}}/*"]
+                }]
+            }
+            """;
+
+        await _client.SetPolicyAsync(new SetPolicyArgs()
+            .WithBucket(_config.BucketName)
+            .WithPolicy(policy), ct);
     }
 }
