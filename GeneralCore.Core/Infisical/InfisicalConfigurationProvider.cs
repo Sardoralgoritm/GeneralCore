@@ -70,12 +70,10 @@ public class InfisicalConfigurationProvider : ConfigurationProvider
             var value = secret.GetProperty("secretValue").GetString();
 
             // "Database__ConnectionString" → "Database:ConnectionString"
-            var mappedKey = key.Replace("__", ":");
-            Console.WriteLine($"[Infisical] key: {key} → {mappedKey}");
-            data[mappedKey] = value;
+            data[key.Replace("__", ":")] = value;
         }
 
-        Console.WriteLine($"[Infisical] Jami {data.Count} ta secret yuklandi");
+        Console.WriteLine($"[Infisical] {data.Count} ta secret yuklandi");
         Data = data;
     }
 
