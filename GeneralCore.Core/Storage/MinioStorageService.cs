@@ -44,6 +44,20 @@ public class MinioStorageService : IStorageService
         return key;
     }
 
+    public async Task<Stream> DownloadAsync(string key, CancellationToken ct = default)
+    {
+        var buffer = new MemoryStream();
+
+        await _client.GetObjectAsync(new GetObjectArgs()
+            .WithBucket(_config.BucketName)
+            .WithObject(key)
+            .WithCallbackStream(stream => stream.CopyTo(buffer)),
+            ct);
+
+        buffer.Position = 0;
+        return buffer;
+    }
+
     public Task DeleteAsync(string key, CancellationToken ct = default)
         => _client.RemoveObjectAsync(new RemoveObjectArgs()
             .WithBucket(_config.BucketName)
@@ -58,10 +72,18 @@ public class MinioStorageService : IStorageService
         var exists = await _client.BucketExistsAsync(
             new BucketExistsArgs().WithBucket(_config.BucketName), ct);
 
-        if (!exists)
+        if (exists)
         {
-            await _client.MakeBucketAsync(
-                new MakeBucketArgs().WithBucket(_config.BucketName), ct);
+            return;
+        }
+
+        await _client.MakeBucketAsync(
+            new MakeBucketArgs().WithBucket(_config.BucketName), ct);
+
+        // Public policy faqat ataylab so'ralganda. Aks holda bucket yopiq qoladi
+        // va fayllar faqat DownloadAsync orqali, ruxsat tekshirilgandan keyin beriladi.
+        if (_config.IsPublic)
+        {
             await SetPublicPolicyAsync(ct);
         }
     }
